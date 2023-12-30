@@ -4,12 +4,20 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-def var_examination(dataset: pd.DataFrame, target: str):
+def var_examination(dataset: pd.DataFrame, target: str, figsize: tuple=(20, 2)):
+    """
+    Perform variable examination on a dataset.
 
-    # TODO correlation heatmap "unviversalisation"
+    Parameters:
+    dataset (pd.DataFrame): The dataset to be examined.
+    target (str): The target variable to be analyzed.
+    figsize (tuple): The size of the figure (width, height).
+
+    Returns:
+    None
+    """
 
     # Distribution plot using histplot
-    plt.figure(figsize=(8, 2))
     sns.histplot(dataset[target], bins=30, kde=True)
     plt.title('Distribution of LSTAT Values')
     plt.xlabel(target)
@@ -18,35 +26,31 @@ def var_examination(dataset: pd.DataFrame, target: str):
     plt.show()
 
     # Box plot to identify outliers
-    plt.figure(figsize=(10, 2))
     sns.boxplot(x=dataset[target])
     plt.title('Box Plot of LSTAT Values')
     plt.xlabel(target)
     plt.grid(True)
     plt.show()
 
-    dataset['LOG_LSTAT'] = np.log(dataset[target])
+    dataset['LOG_' + target] = np.log(dataset[target])
 
-    # Distribution of log-transformed LSTAT
-    plt.figure(figsize=(10, 2))
-    sns.histplot(dataset['LOG_LSTAT'], bins=30, kde=True)
-    plt.title('Distribution of Log-Transformed LSTAT Values')
-    plt.xlabel('Log of LSTAT')
+    # Distribution of log-transformed target variable
+    sns.histplot(dataset['LOG_' + target], bins=30, kde=True)
+    plt.title('Distribution of Log-Transformed ' + target + ' Values')
+    plt.xlabel('Log of ' + target)
     plt.ylabel('Frequency')
     plt.grid(True)
     plt.show()
 
     # QQ plot to check for normality
-    plt.figure(figsize=(10, 2))
     stats.probplot(dataset[target], dist="norm", plot=plt)
     plt.title('QQ Plot of LSTAT Values')
     plt.grid(True)
     plt.show()
 
-    correlation_matrix = dataset[[target, 'LOG_LSTAT', 'RM', 'AGE']].corr()
+    correlation_matrix = dataset.corr()
 
     # Correlation heatmap
-    plt.figure(figsize=(4, 4))
     sns.heatmap(correlation_matrix, annot=True, fmt=".2f", cmap='coolwarm')
     plt.title('Correlation Heatmap')
     plt.show()
@@ -63,4 +67,4 @@ def var_examination(dataset: pd.DataFrame, target: str):
         'Correlation with AGE': correlation_matrix.loc[target, 'AGE'].round(2)
     }
 
-    findings
+    print(findings)
