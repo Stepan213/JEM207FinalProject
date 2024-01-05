@@ -49,7 +49,8 @@ def var_examination(dataset: pd.DataFrame, target: str, figsize: tuple=(20, 2)):
     correlation_matrix = dataset.corr()
 
     # Correlation heatmap
-    sns.heatmap(correlation_matrix, annot=True, fmt=".2f", cmap='coolwarm')
+    sns.heatmap(correlation_matrix, annot=True, fmt=".2f", cmap='coolwarm', annot_kws={"size": 8})
+    plt.tight_layout()
     plt.title('Correlation Heatmap')
     plt.show()
 
