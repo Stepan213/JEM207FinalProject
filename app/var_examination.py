@@ -32,10 +32,8 @@ def var_examination(dataset: pd.DataFrame, target: str, figsize: tuple=(20, 2)):
     plt.grid(True)
     plt.show()
 
-    dataset['LOG_' + target] = np.log(dataset[target])
-
     # Distribution of log-transformed target variable
-    sns.histplot(dataset['LOG_' + target], bins=30, kde=True)
+    sns.histplot(np.log(dataset[target]), bins=30, kde=True)
     plt.title('Distribution of Log-Transformed ' + target + ' Values')
     plt.xlabel('Log of ' + target)
     plt.ylabel('Frequency')
