@@ -17,7 +17,7 @@ def var_examination(dataset: pd.DataFrame, target: str, figsize: tuple=(20, 2)):
     None
     """
 
-    # Distribution plot using histplot
+    # Histogram
     sns.histplot(dataset[target], bins=30, kde=True)
     plt.title('Distribution of LSTAT Values')
     plt.xlabel(target)
@@ -25,7 +25,7 @@ def var_examination(dataset: pd.DataFrame, target: str, figsize: tuple=(20, 2)):
     plt.grid(True)
     plt.show()
 
-    # Box plot to identify outliers
+    # Box plot 
     sns.boxplot(x=dataset[target])
     plt.title('Box Plot of LSTAT Values')
     plt.xlabel(target)
@@ -33,6 +33,7 @@ def var_examination(dataset: pd.DataFrame, target: str, figsize: tuple=(20, 2)):
     plt.show()
 
     # Distribution of log-transformed target variable
+    # This was suggested, I should maybe figure out why is it relevant?
     sns.histplot(np.log(dataset[target]), bins=30, kde=True)
     plt.title('Distribution of Log-Transformed ' + target + ' Values')
     plt.xlabel('Log of ' + target)
@@ -41,6 +42,7 @@ def var_examination(dataset: pd.DataFrame, target: str, figsize: tuple=(20, 2)):
     plt.show()
 
     # QQ plot to check for normality
+    # What does this acutually show?
     stats.probplot(dataset[target], dist="norm", plot=plt)
     plt.title('QQ Plot of LSTAT Values')
     plt.grid(True)
