@@ -82,10 +82,10 @@ class RegressionModel:
         self.Y_train = None
         self.Y_test = None
 
-    def split_data(self, df, variables, target, test_size=0.2, random_state=42):
+    def split_data(self, df, variables, target, test_size=0.2):
         X = df[variables]
         Y = df[target]
-        self.X_train, self.X_test, self.Y_train, self.Y_test = train_test_split(X, Y, test_size=test_size, random_state=42)
+        self.X_train, self.X_test, self.Y_train, self.Y_test = train_test_split(X, Y, test_size=test_size, random_state=self.random_state)
 
     def _random_search(self):
         if self.hyperpar_grid is not None:
@@ -108,17 +108,18 @@ class RegressionModel:
         if self.hyperpar_grid is not None:
             bayesian_opt = BayesSearchCV(estimator=self.model, search_spaces=self.hyperpar_grid,
                                          n_iter=self.n_iter, cv=self.cv, verbose=2, n_jobs=-1, scoring='neg_mean_squared_error')
+            np.int = int
             bayesian_opt.fit(self.X_train, self.Y_train)
             self.best_params = bayesian_opt.best_params_
             self.model = bayesian_opt.best_estimator_
 
     def train(self, search_method='random_search'):
         if self.model_type == 'random_forest':
-            self.model = RandomForestRegressor()
+            self.model = RandomForestRegressor(random_state=self.random_state)
         elif self.model_type == 'lasso':
-            self.model = Lasso()
+            self.model = Lasso(random_state=self.random_state)
         elif self.model_type == 'ridge':
-            self.model = Ridge()
+            self.model = Ridge(random_state=self.random_state)
         else:
             raise ValueError("Invalid model type. Supported types: 'random_forest', 'lasso', 'ridge'.")
 
@@ -164,17 +165,17 @@ class RegressionModel:
 
         return self.model.feature_importances_
 
-### Example usage
+### Example usage ----------------------------#
 X, Y = make_regression(n_samples=100, n_features=2, noise=0.1, random_state=42)
 df = pd.DataFrame({'Feature1': X[:, 0], 'Feature2': X[:, 1], 'Target': Y})
 
-model = RegressionModel(model_type='random_forest', hyperpar_grid={'n_estimators': [10, 50, 100], 'max_depth': [None, 10, 20]},cv = 10, n_iter=15, random_state=42)
-model.split_data(df, variables=['Feature1', 'Feature2'], target='Target', test_size=0.2, random_state=42)
-model.train(search_method='grid_search')
+model = RegressionModel(model_type='random_forest', hyperpar_grid={'n_estimators': [10,20,30,150], 'max_depth': [None, 10, 20,30]},cv = 10, n_iter=15, random_state=42)
+model.split_data(df, variables=['Feature1', 'Feature2'], target='Target', test_size=0.2)
+model.train(search_method='bayesian_optimization')
 
 mse = model.evaluate()
 print(f"Mean Squared Error: {mse}")
-
+#---------------------------------------------#
 
 
 class Visualization:
