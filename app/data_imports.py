@@ -1,17 +1,30 @@
+
 import pandas as pd
 
-def convert_to_dataframe(file_path, file_format):
-
-    if file_format == 'pandas':
-        return pd.read_pickle(file_path)
-    elif file_format == 'csv':
-        return pd.read_csv(file_path)
-    elif file_format == 'txt':
-        return pd.read_table(file_path)
-    elif file_format == 'excel':
-        return pd.read_excel(file_path)
+def read_file(file_path):
+    if file_path.endswith('.csv'):
+        df = pd.read_csv(file_path)
+    elif file_path.endswith('.xlsx'):
+        df = pd.read_excel(file_path)
     else:
-        raise ValueError('Unsupported file format')
+        print("Invalid file format. Only CSV and XLSX files are supported.")
 
-# Example usage
-data_frame = convert_to_dataframe('/path/to/file.csv', 'csv')
+    return df
+
+def import_from_api(api_url):
+    # Add code to import data from API
+    pass
+
+def import_data(data_source):
+    if data_source == "file":
+        file_path = input("Enter the file path: ")
+        df = read_file(file_path)
+    elif data_source == "api":
+        api_url = input("Enter the API URL: ")
+        df = import_from_api(api_url)
+    else:
+        print("Invalid data source. Please choose 'file' or 'api'.")
+    if df.empty:
+        print("No data was imported.")
+
+    return df
