@@ -6,7 +6,7 @@ def clean(df):
 
     return out
 
-def na_handling(df, na_strategy):
+def na_handling(df, na_strategy = "remove"):
     if na_strategy == "remove":
         df = df.dropna()
     elif na_strategy == "mean":
