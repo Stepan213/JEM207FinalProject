@@ -6,8 +6,10 @@ def read_file(file_path):
         df = pd.read_csv(file_path)
     elif file_path.endswith('.xlsx'):
         df = pd.read_excel(file_path)
+    elif file_path.endswith('.json'):
+        df = pd.read_json(file_path)
     else:
-        print("Invalid file format. Only CSV and XLSX files are supported.")
+        print("Invalid file format. CSV, XLSX and JSON files are supported.")
 
     return df
 
