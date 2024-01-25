@@ -104,13 +104,13 @@ class RegressionModel:
         return self.model.feature_importances_
 
 ### Example usage ----------------------------#
-X, Y = make_regression(n_samples=100, n_features=2, noise=0.1, random_state=42)
-df = pd.DataFrame({'Feature1': X[:, 0], 'Feature2': X[:, 1], 'Target': Y})
+#X, Y = make_regression(n_samples=100, n_features=2, noise=0.1, random_state=42)
+#df = pd.DataFrame({'Feature1': X[:, 0], 'Feature2': X[:, 1], 'Target': Y})
 
-model = RegressionModel(model_type='random_forest', hyperpar_grid={'n_estimators': [10,20,30,150], 'max_depth': [None, 10, 20,30]},cv = 10, n_iter=15, random_state=42)
-model.split_data(df, variables=['Feature1', 'Feature2'], target='Target', test_size=0.2)
-model.train(search_method='bayesian_optimization')
+# model = RegressionModel(model_type='random_forest', hyperpar_grid={'n_estimators': [10,20,30,150], 'max_depth': [None, 10, 20,30]},cv = 10, n_iter=15, random_state=42)
+# model.split_data(df, variables=['Feature1', 'Feature2'], target='Target', test_size=0.2)
+# model.train(search_method='bayesian_optimization')
 
-mse = model.evaluate()
-print(f"Mean Squared Error: {mse}")
+# mse = model.evaluate()
+# print(f"Mean Squared Error: {mse}")
 #---------------------------------------------#
