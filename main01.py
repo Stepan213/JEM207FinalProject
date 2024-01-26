@@ -112,6 +112,15 @@ class RegressionModel:
             bayesian_opt.fit(self.X_train, self.Y_train)
             self.best_params = bayesian_opt.best_params_
             self.model = bayesian_opt.best_estimator_
+    def create_shap_explainer(self):
+        if self.model_type == 'random_forest':
+            shap_explainer = shap.TreeExplainer(self.model)
+        elif self.model_type in ['lasso', 'ridge', 'linear_regression']:
+            shap_explainer = shap.LinearExplainer(self.model, self.X_train)
+        else:
+            raise ValueError("Invalid model type for SHAP explainer.")
+
+        return shap_explainer
 
     def train(self, search_method='random_search'):
         if self.model_type == 'random_forest':
@@ -120,6 +129,8 @@ class RegressionModel:
             self.model = Lasso(random_state=self.random_state)
         elif self.model_type == 'ridge':
             self.model = Ridge(random_state=self.random_state)
+        elif self.model_type == 'linear_regression':
+            self.model = LinearRegression()
         else:
             raise ValueError("Invalid model type. Supported types: 'random_forest', 'lasso', 'ridge'.")
 
@@ -132,8 +143,13 @@ class RegressionModel:
             self._grid_search()
         elif search_method == 'bayesian_optimization':
             self._bayesian_optimization()
+        elif search_method == 'none':
+            self.model.fit(self.X_train, self.Y_train)
         else:
-            raise ValueError("Invalid search method. Supported methods: 'random_search', 'grid_search', 'bayesian_optimization'.")
+            raise ValueError("Invalid search method. Supported methods: 'none','random_search', 'grid_search', 'bayesian_optimization'.")
+        
+        if self.model is not None:
+            self.shap_explainer = self.create_shap_explainer()
 
     def predict(self, X_test=None):
         if self.model is None:
@@ -164,14 +180,22 @@ class RegressionModel:
             X_test = self.X_test
 
         return self.model.feature_importances_
+    def shap_values(self, X_test=None):
+        if self.shap_explainer is None:
+            raise ValueError("SHAP explainer has not been created. Call the 'train' method first.")
+
+        if X_test is None:
+            X_test = self.X_test
+
+        return self.shap_explainer.shap_values(X_test)
 
 ### Example usage ----------------------------#
 X, Y = make_regression(n_samples=100, n_features=2, noise=0.1, random_state=42)
 df = pd.DataFrame({'Feature1': X[:, 0], 'Feature2': X[:, 1], 'Target': Y})
-
+#---------------------------------------------#
 model = RegressionModel(model_type='random_forest', hyperpar_grid={'n_estimators': [10,20,30,150], 'max_depth': [None, 10, 20,30]},cv = 10, n_iter=15, random_state=42)
 model.split_data(df, variables=['Feature1', 'Feature2'], target='Target', test_size=0.2)
-model.train(search_method='bayesian_optimization')
+model.train(search_method='random_search')
 
 mse = model.evaluate()
 print(f"Mean Squared Error: {mse}")
@@ -179,10 +203,13 @@ print(f"Mean Squared Error: {mse}")
 
 
 class Visualization:
-    def __init__(self, df, variables, target):
+    def __init__(self, df, variables, target,shap_explainer, feature_names):
         self.df = df
         self.variables = variables
         self.target = target
+        self.shap_explainer = shap_explainer
+        self.feature_names = feature_names
+
 
     def plot_correlation(self):
         corr = self.df[self.variables + [self.target]].corr()
@@ -194,3 +221,17 @@ class Visualization:
             sns.scatterplot(x=var, y=self.target, data=self.df)
             plt.show()
 
+    def summary_plot(self, shap_values, X):
+        shap.summary_plot(shap_values, X, feature_names=self.feature_names)
+        plt.show()
+
+    def force_plot(self, shap_values, X):
+        shap.force_plot(self.shap_explainer.expected_value, shap_values, X, feature_names=self.feature_names,matplotlib=True)
+        plt.show()
+
+### Example usage 2--------------#
+visualization = Visualization(df,variables=['Feature1', 'Feature2'], target='Target',shap_explainer=model.shap_explainer, feature_names=model.X_train.columns)
+shap_values = model.shap_values(model.X_test)
+#visualization.summary_plot(shap_values, model.X_test)
+visualization.force_plot(shap_values, model.X_test)
+#--------------------------------#
