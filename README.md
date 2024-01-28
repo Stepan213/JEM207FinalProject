@@ -1,16 +1,6 @@
 # JEM207FinalProject
-The repository for the final project for the course JEM207 at IES CUNI.
+The repository for the final project for the course JEM207 at IES CUNI. The goal of the project is to give "non-technical" user the ability to explore a provided dataset. The input consists of a dataset in one of well-known formats (e.g. `.CSV`, `.JSON`, `.XSLSX`). The output is a summary of the provided data, along with graphical presentations and some selection of fitted models. 
 
 # Project structure
-The main file of the project is `main.ipynb`. Other Python files are meant as support and are used throughout the `main.ipynb` file. 
+The interface is the `run.ipynb` file, where the user specifies the path to their dataset. 
 
-# Objective of the project
-The Boston Housing Dataset used to be popular in CS classes, as it provided simple and reasonable data upon which price prediction algorithms could be trained.
-
-However, it is currently (and rightfully) deemed as controversial. This is mainly due to two issues: 
-
-## 1) Racial bias
-
-
-
-## 2) Wealth bias
