@@ -9,6 +9,9 @@ class DataCleaner:
 
     def clean(self):
         self.df = self.na_handling("remove")
+        self.df = self.remove_duplicates()
+
+        return self.df
 
     def na_handling(self, na_strategy="remove", specific_columns=None):
         """
@@ -16,6 +19,7 @@ class DataCleaner:
         """
         initial_shape = self.df.shape
         initial_na_count = self.df.isna().sum().sum()
+        self.log.append(f"na_handling: There are {initial_na_count} missing values in the DataFrame.")
 
         if specific_columns:
             for col in specific_columns:
@@ -68,6 +72,19 @@ class DataCleaner:
             return self.df[col].median()
         elif strategy == "mode":
             return self.df[col].mode()[0]
+        
+    def remove_duplicates(self):
+        initial_shape = self.df.shape
+
+        self.df = self.df.drop_duplicates()
+
+        final_shape = self.df.shape
+        removed_duplicates = initial_shape[0] - final_shape[0]
+
+        self.log.append(f"remove_duplicates: Changed from {initial_shape} to {final_shape}. "
+                        f"Removed {removed_duplicates} duplicate rows.")
+
+        return self.df
 
     def get_log(self):
         return "\n".join(self.log)
