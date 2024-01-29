@@ -52,6 +52,7 @@ class Visualization:
     def plot_categorical(self):
         for var in self.categorical_vars:
             plt.title(f"Count Plot of {var}")
+            plt.xticks(rotation=45)
             sns.countplot(x=var, data=self.df)
             plt.show()
 
