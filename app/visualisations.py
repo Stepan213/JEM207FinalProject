@@ -8,12 +8,17 @@ class Visualization:
         self.variables = variables
         self.target = target
 
+        if not self.target:
+            self.target = self.df.columns.tolist()[-1]
+        if not self.variables:
+            self.variables = self.df.columns.tolist()
+            self.variables.remove(self.target)
+
     def plot_all(self):
         self.plot_correlation()
         self.plot_scatter()
         self.plot_box()
         self.plot_histogram()
-        self.plot_count()
         self.plot_regression()
         self.plot_kde()
 
@@ -32,7 +37,6 @@ class Visualization:
             sns.scatterplot(x=x_var, y=y_var, data=self.df)
             plt.show()
         else:
-            plt.title("Pair Plot")
             sns.pairplot(self.df[self.variables + [self.target]])
             plt.show()
 
@@ -45,17 +49,14 @@ class Visualization:
         plt.show()
 
     def plot_histogram(self):
+        plt.title(f"Histogram of {self.target}")
+        sns.histplot(self.df[self.target], kde=True)
+        plt.show()
+
         for var in self.variables:
             plt.title(f"Histogram of {var}")
             sns.histplot(self.df[var], kde=True)
             plt.show()
-
-    def plot_count(self):
-        for var in self.variables:
-            if self.df[var].dtype == 'object' or self.df[var].nunique() < 10:
-                plt.title(f"Count Plot of {var}")
-                sns.countplot(x=var, hue=self.target, data=self.df)
-                plt.show()
 
     def plot_regression(self):
         for var in self.variables:
