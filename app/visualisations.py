@@ -2,9 +2,10 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+import shap
 
 class Visualization:
-    def __init__(self, df, variables=None, target=None):
+    def __init__(self, df, variables=None, target=None,model=None, X_test=None):
         self.df = df
         self.target = target if target else self.df.columns.tolist()[-1]
         self.variables = variables if variables else self.df.columns.tolist()
@@ -12,6 +13,10 @@ class Visualization:
         self.categorical_vars = []
         self.numerical_vars = []
         self.identify_variable_types()
+
+        self.model = model
+        self.X_test = X_test
+        self.shap_values = None
 
         if self.target in self.variables:
             self.variables.remove(self.target)
@@ -106,3 +111,27 @@ class Visualization:
             plt.title(f"KDE Plot of {variable}")
             sns.kdeplot(data=self.df, x=variable)
             plt.show()
+
+    def generate_shap_values(self):
+        if self.model is None or self.model.model is None:
+            raise ValueError("Model has not been trained yet. Call the 'train' method first.")
+        explainer = shap.Explainer(self.model.model)
+        self.shap_values = explainer.shap_values(self.X_test)
+
+    def plot_shap_summary(self):
+        if self.shap_values is None:
+            raise ValueError("SHAP values have not been generated. Call the 'generate_shap_values' method first.")
+        shap.summary_plot(self.shap_values, self.X_test, show=False)
+        plt.show()
+
+    def plot_shap_force(self, index):
+        if self.shap_values is None:
+            raise ValueError("SHAP values have not been generated. Call the 'generate_shap_values' method first.")
+        shap.force_plot(explainer.expected_value, self.shap_values[index, :], self.X_test.iloc[index, :], show=False)
+        plt.show()
+
+# ### Example usage 2--------------#
+#visualization = Visualization(model=model, X_test=model.X_test)
+#visualization.generate_shap_values()
+#visualization.plot_shap_summary()
+#visualization.plot_shap_force(index=0)
