@@ -18,11 +18,23 @@ def numeric_statistics(df, decimal_places=2):
 def categorical_statistics(df):
     data = df.select_dtypes(include='object')
 
+    # Check if data is empty
+    if data.empty:
+        return pd.DataFrame()
+
     stats = pd.DataFrame(index=data.columns)
 
     stats['unique_values'] = data.nunique()
-    stats['mode'] = data.mode().iloc[0]
-    stats['frequency_of_mode'] = data.apply(lambda x: x.value_counts().iloc[0])
+
+    # Safely get mode
+    mode_df = data.mode()
+    if mode_df.empty:
+        stats['mode'] = None
+        stats['frequency_of_mode'] = None
+    else:
+        stats['mode'] = mode_df.iloc[0]
+        stats['frequency_of_mode'] = data.apply(lambda x: x.value_counts().iloc[0] if not x.empty else None)
+
     stats['missing_values'] = data.isnull().sum()
 
     return stats
