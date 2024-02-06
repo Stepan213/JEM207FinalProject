@@ -17,6 +17,7 @@ class Visualization:
         self.model = model
         self.X_test = X_test
         self.shap_values = None
+        self.explainer = None
 
         if self.target in self.variables:
             self.variables.remove(self.target)
@@ -115,8 +116,8 @@ class Visualization:
     def generate_shap_values(self):
         if self.model is None or self.model.model is None:
             raise ValueError("Model has not been trained yet. Call the 'train' method first.")
-        explainer = shap.Explainer(self.model.model)
-        self.shap_values = explainer.shap_values(self.X_test)
+        self.explainer = shap.Explainer(self.model.model)
+        self.shap_values = self.explainer.shap_values(self.X_test)
 
     def plot_shap_summary(self):
         if self.shap_values is None:
@@ -127,7 +128,7 @@ class Visualization:
     def plot_shap_force(self, index):
         if self.shap_values is None:
             raise ValueError("SHAP values have not been generated. Call the 'generate_shap_values' method first.")
-        shap.force_plot(explainer.expected_value, self.shap_values[index, :], self.X_test.iloc[index, :], show=False)
+        shap.force_plot(self.explainer.expected_value, self.shap_values[index, :], self.X_test.iloc[index, :], show=False,matplotlib=True)
         plt.show()
 
 # ### Example usage 2--------------#
