@@ -9,6 +9,7 @@ from app import relationship_detection
 from flask import Flask, render_template, request
 import os
 from markupsafe import escape
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__, template_folder='templates')
 UPLOAD_FOLDER = 'uploads'
@@ -29,15 +30,17 @@ def upload():
     if file.filename.endswith('.csv') == False + file.filename.endswith('.xlsx') == False:
         return "Invalid file format. Only CSV and XLSX files are supported."
 
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(file.filename))
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
     file.save(file_path) 
 
     df = data_imports.read_file(file_path)
     cleaner = data_cleaning.DataCleaner(df)
-    cleaner.clean()
+    df = cleaner.clean()
+    print(cleaner.get_log())
     return df.to_html()
+
 
 if __name__ == '__main__':
     app.run(debug=True)
