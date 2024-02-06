@@ -3,6 +3,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import Lasso, Ridge
 from sklearn.metrics import mean_squared_error
 from skopt import BayesSearchCV
+from sklearn.linear_model import LinearRegression
 import numpy as np
 
 
@@ -47,7 +48,6 @@ class RegressionModel:
             bayesian_opt = BayesSearchCV(estimator=self.model, search_spaces=self.hyperpar_grid,
                                          n_iter=self.n_iter, cv=self.cv, verbose=2, n_jobs=-1, scoring='neg_mean_squared_error')
             np.int = int
-            np.float= cfloat
             bayesian_opt.fit(self.X_train, self.Y_train)
             self.best_params = bayesian_opt.best_params_
             self.model = bayesian_opt.best_estimator_
@@ -59,6 +59,8 @@ class RegressionModel:
             self.model = Lasso(random_state=self.random_state)
         elif self.model_type == 'ridge':
             self.model = Ridge(random_state=self.random_state)
+        elif self.model_type == 'linear_regression':
+            self.model = LinearRegression()
         else:
             raise ValueError("Invalid model type. Supported types: 'random_forest', 'lasso', 'ridge'.")
 
@@ -71,6 +73,8 @@ class RegressionModel:
             self._grid_search()
         elif search_method == 'bayesian_optimization':
             self._bayesian_optimization()
+        elif search_method == 'none':
+            self.model.fit(self.X_train, self.Y_train)
         else:
             raise ValueError("Invalid search method. Supported methods: 'random_search', 'grid_search', 'bayesian_optimization'.")
 
