@@ -5,7 +5,7 @@ import numpy as np
 import shap
 
 class Visualization:
-    def __init__(self, df, variables=None, target=None,model=None, X_test=None,model_type=None):
+    def __init__(self, df, variables=None, target=None,model=None, X_test=None):
         self.df = df
         self.target = target if target else self.df.columns.tolist()[-1]
         self.variables = variables if variables else self.df.columns.tolist()
@@ -13,8 +13,7 @@ class Visualization:
         self.categorical_vars = []
         self.numerical_vars = []
         self.identify_variable_types()
-
-        self.model_type = model_type
+        self.model_type = None
         self.model = model
         self.X_test = X_test
         self.shap_values = None
@@ -134,7 +133,7 @@ class Visualization:
     def plot_shap_summary(self):
         if self.shap_values is None:
             raise ValueError("SHAP values have not been generated. Call the 'generate_shap_values' method first.")
-        shap.summary_plot(self.shap_values, self.X_test, show=False)
+        shap.summary_plot(self.shap_values, self.X_test, show=False,masker = self.masker)
         plt.show()
 
     def plot_shap_force(self, index):
