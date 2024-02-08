@@ -1,19 +1,17 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu</title>
+  <meta charset="utf-8">
+  <title>Main Menu</title>
 </head>
 <body>
-    <h1>Menu</h1>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" id="fileInput" style="display: none;" onchange="updateFileName()">
-        <input type="text" name="filePath" id="filePath" placeholder="Select a file..." readonly>
-        <button type="button" onclick="browseFile()">Browse</button>
-        <button type="submit">Upload</button>
-    </form>
-
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  <h1>Main Menu</h1>
+  <div>
+    <a href="{{ url_for('clean_dataframe') }}" class="btn btn-primary">Clean Dataset</a>
+    <a href="{{ url_for('view_dataframe') }}" class="btn btn-primary">View Dataset</a>
+    <a href="{{ url_for('summary_statistics') }}" class="btn btn-primary">Summary statistics</a>
+    <a href="{{ url_for('regression') }}" class="btn btn-primary">Regression</a>
+    <a href="{{ url_for('visualisation') }}" class="btn btn-primary">Visualization</a>
+  </div>
 </body>
 </html>

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dataframe</title>
+</head>
+<body>
+  <h1>Dataframe preview</h1>
+  <div>
+    <table border="1">
+      <thead>
+          <tr>
+              {% for column in df.columns %}
+                  <th>{{ column }}</th>
+              {% endfor %}
+          </tr> 
+      </thead>
+      <tbody>
+            {% for index, row in df.head(100).iterrows() %}
+              <tr>
+                  {% for value in row %}
+                      <td>{{ value }}</td>
+                  {% endfor %}
+              </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+    <a href="{{ url_for('menu') }}" class="btn btn-primary">Back to menu</a>
+  </div>
+</body>
+</html>
