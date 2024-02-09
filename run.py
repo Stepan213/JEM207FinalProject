@@ -7,6 +7,7 @@ from app import models
 from app import visualisations
 from flask import Flask, render_template, request,redirect, url_for
 import os
+import json
 from markupsafe import escape
 from werkzeug.utils import secure_filename
 
@@ -72,25 +73,29 @@ def summary_statistics():
 def visualisation():
     return render_template('visualisations.html')
 
-@app.route('/regression')
+@app.route('/regression',methods=['GET','POST'])
 def regression():
     return render_template('regression.html',df=app.config['df'])
 
-@app.route('/run_regression')
+@app.route('/run_regression', methods=['GET','POST'])
 def run_regression():
 
-    model_type = request.args.get('model_type')
-    target = request.args.get('target')
-    features = request.args.get('features')
-    hyperpar_grid = request.args.get('hyperpar_grid')
-    cv = request.args.get('cv')
-    n_iter = request.args.get('n_iter')
-    random_state = request.args.get('random_state')
-    test_size = request.args.get('test_size')
+    model_type = request.form['model_type']
+    target = request.form['target_variable']
+    features = request.form.getlist('features')
+    hyperpar_grid = json.loads(request.form['hyperpar_grid'])
+    cv = int(request.form['cv'])
+    n_iter = int(request.form['n_iter'])
+    test_size = float(request.form['test_size'])
+    search_method = request.form['search_method']
 
-    model = models.RegressionModel(model_type,hyperpar_grid=hyperpar_grid, cv=cv, n_iter=n_iter, random_state=random_state)
+
+    model = models.RegressionModel(model_type,hyperpar_grid=hyperpar_grid, cv=cv, n_iter=n_iter, random_state=42)
     model.split_data(app.config['df'], variables=features, target=target, test_size=test_size)
+    model.train(search_method=search_method)
 
-    return render_template('regression_results.html', model=model)
+    mse = model.evaluate()
+
+    return render_template('regression_results.html', mse=mse)
 if __name__ == '__main__':
     app.run(debug=True)
