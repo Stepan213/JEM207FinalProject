@@ -6,3 +6,46 @@ html {
 body {
     margin: 50px;
 }
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.btn, button {
+    color: black;
+    background-color: #dbdbdb;
+    padding: 15px;
+    margin: 5px 0;
+    max-width: 200px;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.3s;
+    border: none;
+    font-size: inherit;
+    font-family: inherit;
+}
+
+.btn:hover, button:hover {
+    background-color: #c4c4c4;
+    cursor: pointer;
+}
+
+input {
+    font-size: inherit;
+    font-family: inherit;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+table tr:nth-child(even) {
+    background-color: white;
+}
+
+table th, table td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
