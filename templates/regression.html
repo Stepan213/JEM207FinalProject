@@ -19,7 +19,7 @@
 <body>
     <h2>Regression Model Options</h2>
 
-    <form action="/run_regression" method="post">
+    <form action="/run_regression" method="post" onsubmit="return validateForm()">
         <label for="model_type">Select regression model:</label>
         <select id="model_type" name="model_type" onchange="populateHyperparamGrid()">
             <option value="linear_regression">Linear Regression</option>

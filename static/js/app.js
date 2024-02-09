@@ -89,3 +89,11 @@ function getHyperparamOptions(model_type) {
             return {};
     }
 }
+function validateForm() {
+    var checkboxes = document.querySelectorAll('input[name="features"]:checked');
+    if (checkboxes.length === 0) {
+        alert("Please select at least one feature variable.");
+        return false;
+    }
+    return true;
+}
