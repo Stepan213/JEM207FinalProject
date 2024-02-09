@@ -8,11 +8,26 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
 </head>
 <body>
-  <h1>Model trained</h1>
+  <h1>Model Trained</h1>
   <div>
-    <p>Mean sqaure error of the model on test:</p>
-    <p>{{ mse }}</p>
-    <a href="{{ url_for('menu') }}" class="btn btn-primary">Back to menu</a>
+      <p>Mean Square Error of the Model on Test:</p>
+      <p>{{ mse }}</p>
+      <a href="{{ url_for('menu') }}" class="btn btn-primary">Back to Menu</a>
+
+      <div>
+          <a href="{{ url_for('shap_summary') }}" class="btn btn-info">SHAP Summary</a>
+
+          <form action="{{ url_for('shap_forceplot') }}" method="post">
+            <label for="index_input">Enter Index:</label>
+            <input type="text" id="index_input" name="index_input" value="0">
+            <input type="submit" value="SHAP Force Plot" class="btn">
+        </form>
+      </div>
+
+      <div id="error_plot_section">
+          <img src="data:image/png;base64,{{ error_plot }}" alt="Prediction Error Plot">
+      </div>
   </div>
 </body>
+
 </html>

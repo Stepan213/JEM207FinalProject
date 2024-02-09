@@ -8,8 +8,11 @@ from app import visualisations
 from flask import Flask, render_template, request,redirect, url_for
 import os
 import json
+import matplotlib.pyplot as plt
 from markupsafe import escape
 from werkzeug.utils import secure_filename
+import base64
+from io import BytesIO
 
 app = Flask(__name__, template_folder='templates')
 UPLOAD_FOLDER = 'uploads'
@@ -83,7 +86,15 @@ def run_regression():
     model_type = request.form['model_type']
     target = request.form['target_variable']
     features = request.form.getlist('features')
-    hyperpar_grid = json.loads(request.form['hyperpar_grid'])
+    
+    if 'hyperpar_grid' in request.form and request.form['hyperpar_grid']:
+        try:
+            hyperpar_grid = json.loads(request.form['hyperpar_grid'])
+        except json.JSONDecodeError as e:
+            hyperpar_grid = {} 
+    else:
+        hyperpar_grid = {} 
+    
     cv = int(request.form['cv'])
     n_iter = int(request.form['n_iter'])
     test_size = float(request.form['test_size'])
@@ -95,7 +106,65 @@ def run_regression():
     model.train(search_method=search_method)
 
     mse = model.evaluate()
+    app.config['X_test'] = model.X_test
+    app.config['model_type'] = model_type
+    app.config['model'] = model
 
-    return render_template('regression_results.html', mse=mse)
+    predictions = model.predict(model.X_test)
+    plt.switch_backend('Agg')
+    plt.figure(figsize=(10, 6))
+    plt.scatter(model.Y_test, predictions, alpha=0.3)
+    plt.plot([model.Y_test.min(), model.Y_test.max()], [model.Y_test.min(), model.Y_test.max()], 'k--', lw=3) 
+    plt.xlabel('Actual')
+    plt.ylabel('Predicted')
+    plt.title('Prediction Error Plot')
+
+    img_buffer = BytesIO()
+    plt.savefig(img_buffer, format='png')
+    img_buffer.seek(0)
+    img_str = base64.b64encode(img_buffer.read()).decode('utf-8')
+    plt.close()
+
+    return render_template('regression_results.html', mse=mse,error_plot=img_str)
+
+@app.route('/shap_forceplot',methods=['GET','POST'])
+def shap_forceplot():
+    X_test=app.config['X_test']
+    index = int(request.form['index_input'])
+    
+    plt.switch_backend('Agg')
+    plt.figure(figsize=(10, 6))
+
+    visualization = visualisations.Visualization(app.config['df'],model=app.config['model'], X_test=X_test,model_type=app.config['model_type'])
+    visualization.generate_shap_values()
+    visualization.plot_shap_force(index=index)
+
+    img_buffer = BytesIO()
+    plt.savefig(img_buffer, format='png',dpi=200)
+    img_buffer.seek(0)
+    img_str = base64.b64encode(img_buffer.read()).decode('utf-8')
+    plt.close()
+    
+    return render_template('shap_forceplot.html',shap_forceplot=img_str)
+
+@app.route('/shap_summary', methods=['GET','POST'])
+def shap_summary():
+    X_test=app.config['X_test']
+
+    plt.switch_backend('Agg')
+    plt.figure(figsize=(10, 6))
+
+    visualization = visualisations.Visualization(app.config['df'],model=app.config['model'], X_test=X_test,model_type=app.config['model_type'])
+    visualization.generate_shap_values()
+    visualization.plot_shap_summary()
+
+    img_buffer = BytesIO()
+    plt.savefig(img_buffer, format='png',dpi=200)
+    img_buffer.seek(0)
+    img_str = base64.b64encode(img_buffer.read()).decode('utf-8')
+    plt.close()
+    
+    return render_template('shap_summary.html',shap_summary=img_str)
+
 if __name__ == '__main__':
     app.run(debug=True)

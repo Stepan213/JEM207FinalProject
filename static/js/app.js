@@ -62,7 +62,6 @@ function getHyperparamOptions(model_type) {
             return {
                 'alpha': [0.001, 0.01, 0.1, 1.0],
                 'fit_intercept': [true, false],
-                'normalize': [true, false],
                 'max_iter': [100, 200, 300, 400, 500],
                 'tol': [1e-4, 1e-3, 1e-2, 1e-1],
             };
@@ -71,7 +70,6 @@ function getHyperparamOptions(model_type) {
             return {
                 'alpha': [0.001, 0.01, 0.1, 1.0],
                 'fit_intercept': [true, false],
-                'normalize': [true, false],
                 'copy_X': [true, false],
                 'max_iter': [100, 200, 300, 400, 500],
                 'tol': [1e-4, 1e-3, 1e-2, 1e-1],
