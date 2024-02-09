@@ -59,9 +59,17 @@ class Visualization:
 
     def plot_categorical(self):
         for var in self.categorical_vars:
+            unique_values = self.df[var].nunique()
+            threshold = 10 # This is an arbitrary value, adjust as necessary   
+            if unique_values > threshold:
+                print(f"Too many unique values for {var}: {unique_values}. Skipping the count plot.")
+                continue
+            
+            plt.figure(figsize=(10, 5)) # Adjust figure size to fit all labels
             plt.title(f"Count Plot of {var}")
             plt.xticks(rotation=45)
             sns.countplot(x=var, data=self.df)
+            plt.tight_layout() # Adjust layout to make room for label rotation
             plt.show()
 
     def plot_scatter(self, x_var=None, y_var=None):
