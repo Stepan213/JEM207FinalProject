@@ -31,6 +31,9 @@ def upload():
 
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(file.filename))
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+    file.save(file_path)
+
     app.config['df'] =  data_imports.read_file(file_path=file_path)
 
     return redirect(url_for('menu'))
