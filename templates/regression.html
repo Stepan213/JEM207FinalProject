@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regression Input</title>
+</head>
+
+<body>
+    <h2>Regression Model Options</h2>
+
+    <form action="/run_regression" method="post">
+        <label for="model_type">Select Regression Model:</label>
+        <select id="model_type" name="model_type">
+            <option value="linear">Linear Regression</option>
+            <option value="lasso">Lasso Regression</option>
+            <option value="ridge">Ridge Regression</option>
+            <option value="random_forest">Random Forest Regression</option>
+        </select>
+
+        <br>
+
+        <label for="grid_search">Select Search Strategy:</label>
+        <select id="grid_search" name="grid_search">
+            <option value="grid">Grid Search</option>
+            <option value="random">Random Search</option>
+            <option value="baysian">Bayesian Optimization</option>
+            <option value="none">None</option>
+        </select>
+
+        <br>
+
+        <label for="target_variable">Select target variable:</label>
+        <select id="target_variable" name="target_variable">
+            {% for column in df.select_dtypes(include='number').columns %}
+            <option value="{{ column }}">{{ column }}</option>
+            {% endfor %}
+        </select>
+
+        <br>
+
+        <fieldset>
+            <legend>Modeling numerical variables:</legend>
+            {% for column in df.select_dtypes(include='number').columns %}
+            <input type="checkbox" id="{{ column }}" name="numerical_variables" value="{{ column }}">
+            <label for="{{ column }}">{{ column }}</label><br>
+            {% endfor %}
+        </fieldset>
+
+        <br>
+
+        <input type="submit" value="Run Regression">
+        <a href="{{ url_for('menu') }}" class="btn btn-primary">Back to menu</a>
+    </form>
+</body>
+
+</html>

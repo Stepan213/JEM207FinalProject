@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dataframe</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body>
+  <h1>Summary statistics</h1>
+  <div>
+    <table border="1">
+      <thead>
+          <tr>
+              <th></th>  
+              {% for column in n_statistics.columns %}
+                  <th>{{ column }}</th>
+              {% endfor %}
+          </tr>
+      </thead>
+      <tbody>
+          {% for index, row in n_statistics.head(100).iterrows() %}
+              <tr>
+                  <td>{{ index }}</td> 
+                  {% for value in row %}
+                      <td>{{ value }}</td>
+                  {% endfor %}
+              </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+    <a href="{{ url_for('menu') }}" class="btn btn-primary">Back to menu</a>
+  </div>
+</body>
+</html>

@@ -65,20 +65,8 @@ def clean_dataframeresult():
 
 @app.route('/summary_statistics')
 def summary_statistics():
-    return render_template('summary_statistics.html')
-
-@app.route('/summary_statisticsresult')
-def summary_statisticsresult():
-    target_variable = request.form['variables']
-    df = app.config['df']
-    if target_variable == 'all':
-        summary_stats.numeric_statistics(df)
-        summary_stats.categorical_statistics(df)
-    else:
-        print(summary_stats.numeric_statistics(df))
-        print(summary_stats.categorical_statistics(df))
-
-    return render_template('summary_statisticsresult.html')
+    n_stats = summary_stats.numeric_statistics(app.config['df'])
+    return render_template('summary_statistics.html', n_statistics = n_stats)
 
 @app.route('/visualisation')
 def visualisation():
@@ -86,7 +74,23 @@ def visualisation():
 
 @app.route('/regression')
 def regression():
-    return render_template('regression.html')
+    return render_template('regression.html',df=app.config['df'])
 
+@app.route('/run_regression')
+def run_regression():
+
+    model_type = request.args.get('model_type')
+    target = request.args.get('target')
+    features = request.args.get('features')
+    hyperpar_grid = request.args.get('hyperpar_grid')
+    cv = request.args.get('cv')
+    n_iter = request.args.get('n_iter')
+    random_state = request.args.get('random_state')
+    test_size = request.args.get('test_size')
+
+    model = models.RegressionModel(model_type,hyperpar_grid=hyperpar_grid, cv=cv, n_iter=n_iter, random_state=random_state)
+    model.split_data(app.config['df'], variables=features, target=target, test_size=test_size)
+
+    return render_template('regression_results.html', model=model)
 if __name__ == '__main__':
     app.run(debug=True)
