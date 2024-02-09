@@ -18,7 +18,6 @@ def numeric_statistics(df, decimal_places=2):
 def categorical_statistics(df):
     data = df.select_dtypes(include='object')
 
-    # Check if data is empty
     if data.empty:
         return pd.DataFrame()
 
@@ -26,7 +25,6 @@ def categorical_statistics(df):
 
     stats['unique_values'] = data.nunique()
 
-    # Safely get mode
     mode_df = data.mode()
     if mode_df.empty:
         stats['mode'] = None
