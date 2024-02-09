@@ -127,7 +127,7 @@ class Visualization:
         if self.model is None or self.model.model is None:
             raise ValueError("Model has not been trained yet. Call the 'train' method first.")
         if self.model_type == 'linear_regression':
-            self.explainer = shap.Explainer.Linear(self.model.model, self.X_test)
+            self.explainer = shap.Explainer(self.model.model, self.X_test)
         elif self.model_type == 'random_forest':
             self.explainer = shap.TreeExplainer(self.model.model, self.X_test)
         elif self.model_type == 'lasso':
