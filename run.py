@@ -5,7 +5,6 @@ from app import data_cleaning
 from app import summary_stats   
 from app import models
 from app import visualisations
-from app import relationship_detection
 from flask import Flask, render_template, request,redirect, url_for
 import os
 from markupsafe import escape
