@@ -8,15 +8,28 @@ class DataCleaner:
         self.log = []
 
     def clean(self):
+        self.remove_dict_columns()
         self.df = self.na_handling("remove")
         self.df = self.remove_duplicates()
 
         return self.df
 
+    def remove_dict_columns(self):
+        dict_columns = []
+        for col in self.df.columns:
+            for item in self.df[col]:
+                if isinstance(item, dict):
+                    dict_columns.append(col)
+                    break
+                
+        if dict_columns:
+            for col in dict_columns:
+                self.df.drop(columns=col, inplace=True)
+            removed_columns_str = ', '.join(dict_columns)
+            self.log.append(f"remove_dict_columns: Removed columns with dictionaries: {removed_columns_str}.")
+    
+
     def na_handling(self, na_strategy="remove", specific_columns=None):
-        """
-        Handle missing values in the DataFrame based on the specified strategy.
-        """
         initial_shape = self.df.shape
         initial_na_count = self.df.isna().sum().sum()
         self.log.append(f"na_handling: There are {initial_na_count} missing values in the DataFrame.")
